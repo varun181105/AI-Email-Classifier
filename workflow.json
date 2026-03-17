@@ -1,0 +1,219 @@
+{
+  "name": "AI report generator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-report",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1afc47a1-3127-44c5-aea0-fa61639fc30c",
+      "name": "Webhook",
+      "webhookId": "87806b45-b7d2-499f-be77-eaaf685f7db0"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bec932f6-f9de-48e5-a557-c82f865a5b6b",
+              "name": "body.topic",
+              "value": "={{ $json.body.topic }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d9052a2d-c8b9-4483-9540-d59186628b78",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Generate a detailed report about this topic:\n\n{{$json.topic}}\n\nStructure the report like this:\n\n1. Introduction\n2. Key concepts\n3. Real-world applications\n4. Benefits\n5. Conclusion"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "e0a58dff-a320-4924-aaf5-77223a0db6b1",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "vWJaKPqLF18WP6Lm",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "11krQlKaPlp3-4hXABbSIlC1xGxhjmdj4",
+        "title": "=Report - {{$json.topic}}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "fb076378-b96a-4ce5-896d-b9a6345a9efa",
+      "name": "Create a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "eU7NWF9uD66NOtrY",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your email",
+        "subject": "Your AI Generated Report",
+        "message": "=Your report for the topic:  {{$json.topic}}  has been generated successfully.  Check the Google Doc.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "26bfded4-a95a-4537-ba01-919651d05895",
+      "name": "Send a message",
+      "webhookId": "091dd368-8904-4c07-ac0c-0457043d2957",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IB8qWY71XLd63R4x",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{$node[\"Create a document\"].json[\"id\"]}}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{$node[\"Message a model\"].json[\"text\"]}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "4dac0fa1-2527-4bf0-a31e-91186c4f0fa5",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "eU7NWF9uD66NOtrY",
+          "name": "Google Docs account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Create a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "60045492-9d02-4f89-bde9-9baf7a6093a8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d2e231abdfc8c931bed175e8411b1093f89c27cdba2edf7c4ae803a6c14fb74f"
+  },
+  "id": "ejwKUe0i4wS1THKX",
+  "tags": []
+}
