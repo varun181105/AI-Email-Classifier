@@ -1,28 +1,30 @@
-# AI Email Classifier (n8n + OpenAI)
+# AI Report Generator Automation (n8n + OpenAI)
 
 ## Overview
-This project automatically classifies incoming emails using AI.  
-Emails are categorized into labels such as sales, support, or spam and the results are stored in Google Sheets.
+This project is an AI-powered report generation automation built using n8n and OpenAI.  
+It receives input data via webhook, generates a structured report using AI, creates a Google Docs file, and sends the report via email.
 
 ## Tools Used
 - n8n
 - OpenAI API
-- Gmail Trigger
-- Google Sheets
+- Webhook Trigger
+- Google Docs
+- Gmail
 
 ## Workflow
-Gmail Trigger → AI Email Classification → Store Label in Google Sheets
+Webhook → Edit Fields → AI Report Generation → Create Google Doc → Update Document → Send Email
 
 ## How It Works
-1. A new email is received in Gmail.
-2. The Gmail trigger activates the workflow.
-3. The email content is analyzed by OpenAI.
-4. AI classifies the email into predefined categories.
-5. The classification result is stored in Google Sheets.
+1. Data is sent to the webhook.
+2. The workflow processes and structures the input.
+3. OpenAI generates a detailed report.
+4. A new Google Doc is created.
+5. The report content is added to the document.
+6. The final report is sent via email.
 
 ## Setup
 1. Import the `workflow.json` file into n8n.
-2. Configure Gmail, OpenAI, and Google Sheets credentials.
+2. Configure OpenAI, Google Docs, and Gmail credentials.
 3. Activate the workflow.
 
 ## Note
